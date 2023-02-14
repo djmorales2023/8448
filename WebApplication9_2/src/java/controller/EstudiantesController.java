@@ -34,7 +34,7 @@ public class EstudiantesController extends HttpServlet {
     protected void listarEstudiantes(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            
+
             request.setAttribute("lista", eDAO.BuscarTodos());
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(EstudiantesController.class.getName()).log(Level.SEVERE, null, ex);
@@ -48,22 +48,25 @@ public class EstudiantesController extends HttpServlet {
             throws ServletException, IOException {
         try {
             String accion = request.getParameter("accion") == null ? "" : request.getParameter("accion");
+            String id = request.getParameter("id") == null ? "" : request.getParameter("id");
             switch (accion) {
                 case "":
                     //Listar
                     listarEstudiantes(request, response);
                     break;
                 case "Nuevo":
-                    //Mostrar el formulario nuevo
+                    response.sendRedirect("nuevo.jsp");
                     break;
                 case "Eliminar":
-                    //Eliminamos
-                    String id = request.getParameter("id") == null ? "" : request.getParameter("id");
+                    //Eliminamos                    
                     eDAO.Eliminar(Integer.parseInt(id));
                     listarEstudiantes(request, response);
                     break;
                 case "Editar":
                     //Mostrar el formulario editar con los datos cargados
+
+                    request.setAttribute("estudiante", eDAO.BuscarPorId(Integer.parseInt(id)));
+                    request.getRequestDispatcher("editar.jsp").forward(request, response);
                     break;
                 default:
                     Error(request, response);
@@ -78,14 +81,33 @@ public class EstudiantesController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        EstudianteModel eModel = new EstudianteModel();
-        EstudianteDAO eDAO = new EstudianteDAO();
-        eModel.setId(Integer.parseInt(request.getParameter("id")));
-        eModel.setNombre(request.getParameter("nombre"));
-        eModel.setApellido(request.getParameter("apellido"));
-        eModel.setEdad(Integer.parseInt(request.getParameter("edad")));
         try {
-            eDAO.Insertar(eModel);
+            EstudianteModel eModel = new EstudianteModel();
+            EstudianteDAO eDAO = new EstudianteDAO();
+            String accion = request.getParameter("accion") == null ? "" : request.getParameter("accion");
+            String id = request.getParameter("id") == null ? "" : request.getParameter("id");
+            String nombre = request.getParameter("nombre") == null ? "" : request.getParameter("nombre");
+            String apellido = request.getParameter("apellido") == null ? "" : request.getParameter("apellido");
+            String edad = request.getParameter("edad") == null ? "" : request.getParameter("edad");
+            
+            eModel.setId(Integer.parseInt(id));
+            eModel.setNombre(nombre);
+            eModel.setApellido(apellido);
+            eModel.setEdad(Integer.parseInt(edad));
+            
+            switch (accion) {
+                case "Guardar":
+                    eDAO.Insertar(eModel);
+                    break;
+                case "Editar":
+                    eDAO.Actualziar(eModel);
+                    break;
+                default:
+                    Error(request, response);
+                    break;
+            }
+            
+            listarEstudiantes(request, response);
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(EstudiantesController.class.getName()).log(Level.SEVERE, null, ex);
         }

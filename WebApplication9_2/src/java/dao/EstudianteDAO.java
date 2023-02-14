@@ -53,6 +53,7 @@ public class EstudianteDAO {
             ps.setInt(1, id);
             rs = ps.executeQuery();
             while (rs.next()) {
+                estudianteTemp.setId(rs.getInt("Id"));
                 estudianteTemp.setNombre(rs.getString("Nombre"));
                 estudianteTemp.setApellido(rs.getString("Apellido"));
                 estudianteTemp.setEdad(rs.getInt("Edad"));

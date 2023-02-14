@@ -16,7 +16,7 @@
             <input type="text" name="apellido">
             <label>Edad</label>
             <input type="number" name="edad">
-            <input type="submit" name="Guardar" value="Guardar">
+            <input type="submit" name="accion" value="Guardar">
         </form>
     </body>
 </html>
